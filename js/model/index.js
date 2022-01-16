@@ -31,6 +31,34 @@ const model = {
 
     },
 
+    changeCompleted(itemId, dbKey, status) {
+        const data = JSON.parse(localStorage.getItem(dbKey));
+        const currentItem = data.find(todoItem => todoItem.itemId === +itemId);
+
+        currentItem.completed = status;
+
+        localStorage.setItem(
+            dbKey,
+            JSON.stringify(data)
+        )
+    },
+
+    removeItem(dbKey, itemId) {
+        const data = JSON.parse(localStorage.getItem(dbKey));
+        const currentItemIndex = data.findIndex(todoItem => todoItem.itemId === +itemId);
+
+        data.splice(currentItemIndex, 1);
+
+        localStorage.setItem(
+            dbKey,
+            JSON.stringify(data)
+        )
+    },
+
+    clearStorage(dbKey) {
+      localStorage.removeItem(dbKey);
+    },
+
     init(controllerInstance) {
         this.controller = controllerInstance;
     }

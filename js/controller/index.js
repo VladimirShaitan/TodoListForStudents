@@ -16,12 +16,30 @@ function controller(view, model) {
         validateData(data) {
             if(Object.keys(data).length === 0) return false;
 
+
             for(const key in data) {
-                if(!data[key].trim()) return false;
+                // Упрощаем валидацию объекта так как у нас добавились новые поля
+                if(data[key] === '') return false;
+
             }
 
             return true;
-        }
+        },
 
+        changeCompleted(itemId, dbKey, status) {
+            if(!itemId) throw new Error('itemId is not defined');
+
+            model.changeCompleted(itemId, dbKey, status);
+        },
+
+        removeItem(dbKey, itemId) {
+            if(!itemId) throw new Error('No id provided');
+
+            model.removeItem(dbKey, itemId)
+        },
+
+        removeAll(dbKey) {
+            model.clearStorage(dbKey);
+        }
     }
 }
