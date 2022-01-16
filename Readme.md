@@ -8,5 +8,3 @@
 - Bootstrap v5
 - JavaScript
 - MVC
-
-Логика находится в папке ```js```
