@@ -1,66 +1,161 @@
-'use strict'
+'use strict';
 
-const DB_NAME = 'saved_data';
+(function () {
 
-document.querySelector('#todoForm')
-    .addEventListener('submit', e => {
-        e.preventDefault();
-        const inputs = e.target.querySelectorAll('input, textarea');
+    const todoList = {
+        formId: null,
+        form: null,
+        
+        findForm() {
+            const form = document.getElementById(this.formId);
 
-        const obj = {};
+            if(form === null || form.nodeName !== 'FORM') {
+                throw new Error('There is no such form on the page');
+            }
 
-        for(const input of inputs) {
-            if(!input.value.length) return alert('No way you can add this shit');
-            obj[input.name] = input.value;
+            this.form = form;
+            return form;
+        },
+
+        addFormHandler() {
+            this.form.addEventListener(
+                    'submit',
+                    (event) => this.formHandler(event)
+                );
+        },
+
+        preFillTodoList() {
+            document
+                .addEventListener(
+                    'DOMContentLoaded',
+                    this.preFillHandler.bind(this)
+                )
+        },
+
+        preFillHandler() {
+            const data = this.getData();
+            console.log(data)
+
+            data.forEach(todoItem => {
+                const template = this.createTemplate(todoItem);
+                document
+                    .getElementById('todoItems')
+                    .prepend(template);
+            })
+
+        },
+
+        formHandler(event) {
+            event.preventDefault();
+            const inputs = this.findInputs(event.target);
+            const data = {};
+
+            inputs.forEach(input => {
+                data[input.name] = input.value;
+            });
+
+            this.setData(data);
+            const template = this.createTemplate(data);
+
+            document
+                .getElementById('todoItems')
+                .prepend(template);
+
+            event.target.reset()
+        },
+
+        setData(data) {
+            if(!localStorage.getItem(this.formId)) {
+                let arr = [];
+                arr.push(data);
+
+                localStorage.setItem(
+                    this.formId,
+                    JSON.stringify(arr)
+                );
+
+                return;
+            }
+
+
+            let existingData = localStorage.getItem(this.formId);
+            existingData = JSON.parse(existingData);
+            existingData.push(data);
+            localStorage.setItem(
+                this.formId,
+                JSON.stringify(existingData)
+            );
+        },
+
+        getData() {
+            return JSON.parse(
+                localStorage.getItem(this.formId)
+            );
+        },
+
+        findInputs( target ) {
+            return target.querySelectorAll(
+                'input:not([type=submit]), textarea'
+            );
+        },
+
+        init(todoListFormID) {
+            if(typeof todoListFormID !== 'string' || todoListFormID.length === 0) {
+                throw new Error('Todo list ID is not valid');
+            }
+
+            this.formId = todoListFormID;
+            this.findForm();
+            this.addFormHandler();
+            this.preFillTodoList();
+
+        },
+
+        createTemplate({title, description}) {
+
+            const todoItem = this.createElement('div', 'col-4');
+            const taskWrapper = this.createElement('div', 'taskWrapper');
+            todoItem.append(taskWrapper);
+
+            const taskHeading = this.createElement(
+                'div',
+                'taskHeading',
+                title
+            );
+            const taskDescription = this.createElement(
+                'div',
+                'taskDescription',
+                description
+                );
+
+            taskWrapper.append(taskHeading);
+            taskWrapper.append(taskDescription);
+
+            return todoItem;
+        },
+
+        createElement(nodeName, classes, innerContent) {
+            const el = document.createElement(nodeName);
+
+            if(Array.isArray(classes)) {
+
+                classes.forEach(singleClassName => {
+                    el.classList.add(singleClassName);
+                })
+
+            } else {
+                el.classList.add(classes);
+            }
+
+            if(innerContent) {
+                el.innerHTML = innerContent; // fix this
+            }
+
+            return el;
         }
-
-        saveData(obj);
-        renderItem(obj);
-        e.target.reset();
-    });
-
-function saveData(todoItem) {
-    if(localStorage[DB_NAME]) {
-        const data = JSON.parse(localStorage[DB_NAME]);
-        data.push(todoItem)
-        localStorage.setItem(DB_NAME, JSON.stringify(data));
-        return data;
     }
 
-    const data = [todoItem]
-    localStorage.setItem(DB_NAME, JSON.stringify(data));
-    return data
-}
 
-window.addEventListener('load', () => {
-    if(!localStorage[DB_NAME].length) return;
-    const data = JSON.parse(localStorage[DB_NAME]);
-    data.forEach(item => renderItem(item));
-})
+    todoList.init('todoForm');
 
-
-function renderItem(todoItem) {
-    const template = createTemplate(todoItem.title, todoItem.description);
-    document.querySelector('#todoItems').prepend(template);
-}
-
-function createTemplate(titleText = '', descriptionText = '') {
-    const mainWrp = document.createElement('div');
-    mainWrp.className = 'col-4';
-
-    const wrp = document.createElement('div');
-    wrp.className = 'taskWrapper';
-    mainWrp.append(wrp);
-
-    const title = document.createElement('div');
-    title.innerHTML = titleText;
-    title.className = 'taskHeading';
-    wrp.append(title);
-
-    const description = document.createElement('div');
-    description.innerHTML = descriptionText;
-    description.className = 'taskDescription'
-    wrp.append(description);
-
-    return mainWrp;
-}
+})()
