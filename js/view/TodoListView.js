@@ -1,4 +1,4 @@
-class TodoListView {
+export class TodoListView {
     #controller = null;
     #form = null;
     #todoContainer = null;
@@ -68,6 +68,3 @@ class TodoListView {
         return wrapper;
     }
 }
-
-
-new TodoListView(null);

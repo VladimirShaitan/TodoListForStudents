@@ -1,4 +1,6 @@
-class TodoListModel extends TodoModelStorage {
+import {TodoModelStorage as Storage} from './TodoModelStorage.js'
+
+export class TodoListModel extends Storage {
     #controller = null;
     databaseKey = null;
 

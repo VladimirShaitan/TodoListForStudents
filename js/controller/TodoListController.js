@@ -1,4 +1,4 @@
-class TodoListController {
+export class TodoListController {
     _formSelector = null;
     _todosContainerSelector = null;
     _removeBtnSelector = null;

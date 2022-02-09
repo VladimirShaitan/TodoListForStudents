@@ -1,4 +1,4 @@
-class TodoModelStorage {
+export class TodoModelStorage {
     databaseKey = null;
 
     #get() {

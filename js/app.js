@@ -1,32 +1,21 @@
 'use strict';
-//
-// function findParentElByClass(currentElement, parentClassName) {
-//     if(currentElement === null) return null;
-//
-//     if(currentElement.classList.contains(parentClassName)) {
-//         return currentElement
-//     }
-//
-//     return findParentElByClass(currentElement.parentElement, parentClassName);
-//
-//
-// }
-//
-// (function (){
-//     let controllerInstance = controller(view, model);
-//     view.init(controllerInstance);
-//     model.init(controllerInstance);
-// })()
+import {TodoListController as Controller} from './controller/TodoListController.js';
+import {TodoListModel as Model} from './model/TodoListModel.js';
+import {TodoListView as View} from './view/TodoListView.js';
 
-const formConfiguration = {
-    form: '#todoForm',
-    todosContainer: '#todoItems',
-    removeBtn:  '.remove-all'
-}
+const app = (() => {
+    const formConfiguration = {
+        form: '#todoForm',
+        todosContainer: '#todoItems',
+        removeBtn:  '.remove-all'
+    }
 
 
-const controller = new TodoListController(
-    formConfiguration,
-    TodoListView,
-    TodoListModel
-)
+    const controller = new Controller(
+        formConfiguration,
+        View,
+        Model
+    )
+
+    return controller;
+})();
